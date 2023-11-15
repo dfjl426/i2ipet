@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐶 멍냥이 바꾸기 😽</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+<body>
+    <h1>🐶 멍냥이 바꾸기 😽</h1>
+	<div class="container">
+		<p id="msg"></p>
+		<input type="file" id="selectImage" name="selectImage" accept="image/jpeg, image/png, image/bmp, image/webp" onchange="loadFile(this)"/>
+        <label for="selectImage" id="selectImageLabel">사진 선택</label>
+        <div class="imgDiv" id="imgDiv">
+            <img src="" id="previewImg">
+            <img src="" id="resultImg" class="checkOriginImgBtn">
+        </div>
+        <div class="uploadBtnDiv">
+            <button class="uploadImgBtn">사진 변환하기</button>
+            <button class="deleteImgBtn">사진 삭제</button>
+        </div>
+        <div class="resultBtnDiv">
+            <button class="downloadImgBtn">사진 저장하기</button>
+            <!-- <button class="checkOriginImgBtn">원본 사진 다시보기</button> -->
+            <button class="uploadImgBtn">원본 사진으로 다시 시도</button>
+            <button class="reloadBtn">다른 사진으로 다시 시도</button>
+            <button class="shareImgBtn">친구들에게 공유하기</button>
+        </div>
+        <div class="loading">
+            <div class="load-man"></div>
+            <span>🐶 멍냥이 변신 중 😽</span>
+        </div>
+	</div>
+
+
+    <footer>
+        광고를 넣어볼게요
+    </footer>
+</body>
+</html>

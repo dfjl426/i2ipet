@@ -1,0 +1,253 @@
+@font-face {
+    font-family: 'KOTRAHOPE';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2110@1.0/KOTRAHOPE.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+    body {
+        font-family: 'KOTRAHOPE';
+        font-size: large;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    @media screen and (max-width: 450px) {
+        body {
+            height: 700px;
+        }
+    }
+
+    .container {
+        text-align: center;
+        max-width: 400px;
+        width: 80%;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 30px;
+    }
+
+    h1 {
+        margin-top: 50px;
+        color: #333;
+    }
+
+    input {
+        display: none;
+    }
+
+    label{
+        display: block;
+        cursor: pointer;
+        margin: 10px;
+        width: 100%;
+        border: 1px dashed #ccc; /* 테두리 추가 */
+        box-sizing: border-box;
+        background-color: #eee; /* 배경색 추가 */
+        color: #333; /* 텍스트 색상 추가 */
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    .imgDiv, p{
+        width: 100%;
+        display: none;
+    }
+
+    .uploadBtnDiv, 
+    .resultBtnDiv{
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    button{
+        font-family: 'KOTRAHOPE';
+        font-size: large;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        box-sizing: border-box;
+        width: 100%;
+    }
+    
+    .uploadBtnDiv button:first-child, 
+    .resultBtnDiv button:first-child{
+        color: white;
+        padding: 13px 30px;
+        transition: 0.25s;
+        background: linear-gradient(-45deg, #33ccff 0%, #ff99cc 100%);
+        background-size: 400% 400%;
+        animation: gradient1 5s ease infinite;
+    }
+
+    @keyframes gradient1 {
+        0% {background-position: 0% 50%, ;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+
+    .uploadBtnDiv button:last-child,
+    .resultBtnDiv button:nth-child(2),
+    .resultBtnDiv button:nth-child(3),
+    .resultBtnDiv button:nth-child(4),
+    .resultBtnDiv button:last-child {
+        padding: 10px 30px;
+        border: 1px solid #6aafe6;
+        color: #6aafe6;
+        background: white;
+        margin-top: 10px;
+    }
+    
+    .uploadBtnDiv button:last-child:hover, 
+    .resultBtnDiv button:nth-child(2):hover,
+    .resultBtnDiv button:nth-child(3):hover,
+    .resultBtnDiv button:nth-child(4):hover,
+    .resultBtnDiv button:last-child:hover{
+        background: #6aafe6;
+        color: white;
+    }
+
+    button:hover{
+        letter-spacing: 2px;
+        transform: scale(1.005);
+        cursor: pointer;
+    }
+
+    .loading {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        max-width: 400px;
+        height: 100%;
+        margin: auto;
+        padding: 0px 20px;
+        background: linear-gradient(-45deg, rgba(51, 204, 255, 0.7) 0%, rgba(255, 153, 204, 0.7) 100%);
+        animation: gradient1 5s ease infinite;
+        z-index: 9998;
+    }
+
+    @media screen and (max-width: 500px) {
+        #loading {
+            padding: 0px;
+        }
+    }
+
+    .loading span{
+        margin-top: 30px;
+        color: #fff;
+        letter-spacing: 3px;
+        font-size: x-large;
+    }
+
+    :root {
+        --primary: #fff; /* Placeholder value for primary color */
+        --secondary: #fff; /* Placeholder value for secondary color */
+    }
+
+    .load-man {
+        -webkit-animation: load-man-travel 1.2s infinite linear;
+        animation: load-man-travel 1.2s infinite linear;
+        background: repeating-linear-gradient(90deg, var(--secondary), var(--secondary) 5%, transparent 5%, transparent 35%);
+        height: 7px;
+        width: 30%;
+    }
+
+    .load-man:after, .load-man:before {
+        content: '';
+        position: absolute;
+        left: 35%;
+        border: 25px solid var(--primary);
+        border-radius: 100%;
+        margin-top: -25px; }
+        .load-man:before {
+            --close: -90;
+            -webkit-animation: load-man-chomp 0.35s infinite linear;
+            animation: load-man-chomp 0.35s infinite linear;
+            border-bottom-color: transparent;
+            border-left-color: transparent; 
+        }
+        .load-man:after {
+            --close: 0;
+            -webkit-animation: load-man-chomp 0.35s infinite linear;
+            animation: load-man-chomp 0.35s infinite linear;
+            border-right-color: transparent;
+            border-top-color: transparent; 
+        }
+    
+    @-webkit-keyframes load-man-travel {
+        to {
+            background-position: -200px 0; 
+        }
+    }
+    
+    @keyframes load-man-travel {
+        to {
+            background-position: -200px 0; 
+        } 
+    }
+    
+    @-webkit-keyframes load-man-chomp {
+        0% {
+            -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg); 
+        }
+        50% {
+            -webkit-transform: rotate(calc(var(--close) * 1deg));
+            transform: rotate(calc(var(--close) * 1deg)); 
+        }
+        100% {
+            -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg); 
+        } 
+    }
+    
+    @keyframes load-man-chomp {
+        0% {
+            -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg); 
+        }
+        50% {
+            -webkit-transform: rotate(calc(var(--close) * 1deg));
+            transform: rotate(calc(var(--close) * 1deg)); 
+        }
+        100% {
+            -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg); 
+        } 
+    }
+
+    footer {
+        width: 100%;
+        height: 30px;
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 9999;
+    }
