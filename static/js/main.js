@@ -32,7 +32,7 @@ $(document).ready(function (e) {
                 $(".loading").hide();
 
                 if(response.message != ''){
-                    $('#msg').html('');
+                    $('#msg').css('display', 'none');
                     $('#previewImg').css('display','none');
                     $('.uploadBtnDiv').css('display', 'none');
                     $('.resultBtnDiv').css('display', 'block');
@@ -44,6 +44,9 @@ $(document).ready(function (e) {
             },
             error: function (response) {
                 console.log(response.error); // display error response
+                $(".loading").hide();
+                $('#msg').html('<span style="color:red">Sorry, an error occurred. Please try again.</span>');
+                $('#msg').css('display', 'block');
             }
         }); 
     });
