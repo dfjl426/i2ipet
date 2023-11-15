@@ -31,14 +31,19 @@ $(document).ready(function (e) {
                 // 로딩 창 숨김
                 $(".loading").hide();
 
-                $('#msg').html('');
-                $('#previewImg').css('display','none');
-                $('.uploadBtnDiv').css('display', 'none');
-                $('.resultBtnDiv').css('display', 'block');
-                $('#resultImg').attr('src', response.img_str);
+                if(response.message != ''){
+                    $('#msg').html('');
+                    $('#previewImg').css('display','none');
+                    $('.uploadBtnDiv').css('display', 'none');
+                    $('.resultBtnDiv').css('display', 'block');
+                    $('#resultImg').attr('src', response.img_str);
+                }else if(response.error != ''){
+                    $('#msg').html('<span style="color:red"'+ response.error +'</span>');
+                }
+
             },
             error: function (response) {
-                console.log(response.message); // display error response
+                console.log(response.error); // display error response
             }
         }); 
     });
@@ -98,6 +103,21 @@ $(document).ready(function (e) {
             $('#previewImg').css('display', 'none');
             $('#resultImg').css('display', 'block');
         }
+    });
+
+    $(".shareURL").click(function () {
+        // URL을 공유하는 로직을 작성
+        alert("Sharing URL...");
+    });
+
+    $(".shareToX").click(function () {
+        // 트위터 API 또는 URL Scheme을 사용하여 트위터에 공유하는 로직을 작성
+        alert("Sharing to Twitter...");
+    });
+
+    $(".shareToIG").click(function () {
+        // 인스타그램 API 또는 URL Scheme을 사용하여 인스타그램에 공유하는 로직을 작성
+        alert("Sharing to Instagram...");
     });
     
     $('.reloadBtn').on('click', function(){

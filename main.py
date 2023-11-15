@@ -33,48 +33,56 @@ def upload_form():
 
 @app.route('/img2img', methods=['POST'])
 def upload_file():
-    # check if the post request has the file part
-    if 'selectImage' not in request.files:
-        resp = jsonify({'message' : 'No file part in the request'})
-        resp.status_code = 400
-        return resp
+    try:
+        
+        # check if the post request has the file part
+        if 'selectImage' not in request.files:
+            resp = jsonify({'message' : 'No file part in the request', 'error':''})
+            resp.status_code = 400
+            return resp
 
-    inputImg = request.files.getlist('selectImage')[0]
+        inputImg = request.files.getlist('selectImage')[0]
 
-    # prompt = request.files.getlist('prompt')
-    prompt = "animal, cute, high quality, disney, pixar style, 8k, 3d animation"
-    negative_prompt = "bad art, amateur, lowres, bad anatomy, disfigured face, cropped, worst quality, low quality, normal quality, extra digits, extra legs, fewer digits, fewer legs, ugly, watermark, text, error, nsfw, deformed, disfigured,oversaturated,grain, low-res, blurry, low resolution, cropped, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, dehydrated bad proportions, extra limbs, cloned face, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck"
+        # prompt = request.files.getlist('prompt')
+        prompt = "animal, cute, high quality, disney, pixar style, 8k, 3d animation"
+        negative_prompt = "bad art, amateur, lowres, bad anatomy, disfigured face, cropped, worst quality, low quality, normal quality, extra digits, extra legs, fewer digits, fewer legs, ugly, watermark, text, error, nsfw, deformed, disfigured,oversaturated,grain, low-res, blurry, low resolution, cropped, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, dehydrated bad proportions, extra limbs, cloned face, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck"
 
-    init_image = load_image(Image.open(inputImg).convert("RGB"))
-    init_image = Image.open(inputImg).convert("RGB")
+        init_image = load_image(Image.open(inputImg).convert("RGB"))
+        
+        image = pipe(prompt, 
+                negative_prompt=negative_prompt,
+                image=init_image,
+                # num_inference_steps = 20,
+                strength = 0.4,
+                ).images[0]
+
+
+        buffered = io.BytesIO()
+        image.save(buffered, format='png')
+        img_str = "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode("utf-8")
+        
+        errors = {}
+        
+        # 이미지가 검정색인지 검사
+        decoded_img = Image.open(io.BytesIO(base64.b64decode(img_str.split(',')[1])))
+        is_black_image = all(pixel == (0, 0, 0) for pixel in decoded_img.getdata())
+
+        
+        if is_black_image:
+            success = False
+            return jsonify({'message': '','error': 'Sorry, an error occurred. Please try again.'})
+        else:
+            success = True
+
+        if success:
+            return jsonify({'message': 'Files successfully changed', 'img_str': img_str, 'error': ''}), 201
+        else:
+            return jsonify(errors), 400
+        
     
-    image = pipe(prompt, 
-            negative_prompt=negative_prompt,
-            image=init_image,
-            # num_inference_steps = 20,
-            strength = 0.4,
-			).images[0]
-
-
-    buffered = io.BytesIO()
-    image.save(buffered, format='png')
-    img_str = "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-    errors = {}
-    success = True
-
-    if success and errors:
-        errors['message'] = 'File(s) successfully changed'
-        print(206)
-        return resp
-    if success:
-        resp = jsonify({'message': 'Files successfully changed', 'img_str': img_str})
-        resp.status_code = 201
-        return resp
-    else:
-        resp = jsonify(errors)
-        resp.status_code = 400
-        return resp
+    except Exception as e:
+        print(str(e))
+        return jsonify({'message': '','error': 'Sorry, an error occurred. Please try again.'}), 500
 
 if __name__ == "__main__":
     app.run(debug=False, host='0.0.0.0', port=5000)
