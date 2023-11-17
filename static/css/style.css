@@ -46,6 +46,11 @@
         color: #333;
     }
 
+    .container span{
+        color:red;
+        width : 100%
+    }
+
     input {
         display: none;
     }
@@ -149,7 +154,7 @@
         z-index: 9998;
     }
 
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 350px) {
         #loading {
             padding: 0px;
         }

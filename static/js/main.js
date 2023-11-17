@@ -9,7 +9,7 @@ $(document).ready(function (e) {
         var ins = document.getElementById('selectImage').files.length;
 
         if(ins == 0) {
-            $('#msg').html('<span style="color:red">🐶사진을 선택하세요🐶</span>');
+            $('#msg').html('<span>🐶사진을 선택하세요🐶</span>');
             $('#msg').css('display', 'block');
             return;
         }
@@ -38,14 +38,15 @@ $(document).ready(function (e) {
                     $('.resultBtnDiv').css('display', 'block');
                     $('#resultImg').attr('src', response.img_str);
                 }else if(response.error != ''){
-                    $('#msg').html('<span style="color:red"'+ response.error +'</span>');
+                    $('#msg').html('<span>'+ response.error +'</span>');
+                    $('#msg').css('display', 'block');
                 }
 
             },
             error: function (response) {
                 console.log(response.error); // display error response
                 $(".loading").hide();
-                $('#msg').html('<span style="color:red">Sorry, an error occurred. Please try again.</span>');
+                $('#msg').html('<span>Sorry, an error occurred. Please try again.</span>');
                 $('#msg').css('display', 'block');
             }
         }); 
