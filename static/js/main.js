@@ -1,3 +1,5 @@
+var socket = io.connect('http://' + document.domain + ':' + location.port);
+
 $(document).ready(function (e) {
     updateLabelStyle();
 
@@ -5,52 +7,71 @@ $(document).ready(function (e) {
     $(".deleteImgBtn").css('display', 'none');
 
     $('.uploadImgBtn').on('click', function () {
-        var form_data = new FormData();
-        var ins = document.getElementById('selectImage').files.length;
+        var selectImage = $('#selectImage')[0].files;
 
-        if(ins == 0) {
-            $('#msg').html('<span>🐶사진을 선택하세요🐶</span>');
-            $('#msg').css('display', 'block');
-            return;
-        }
-
-        form_data.append("selectImage", document.getElementById('selectImage').files[0]);
-
-        // 로딩 창 표시
-        $(".loading").css('display', 'flex');
-
-        $.ajax({
-            url: 'img2img', // point to server-side URL
-            dataType: 'json', // what to expect back from server
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: form_data,
-            type: 'post',
-            success: function (response) { // display success response
-                // 로딩 창 숨김
+        if (selectImage.length > 0) {
+            $(".loading").css('display', 'flex');
+            
+            // var formData = new FormData();
+            // formData.append('selectImage', selectImage[0]);
+            
+            socket.emit('upload', {'selectImage': selectImage[0]}, function(response) {
+                // 서버에서 전달하는 콜백을 이용하여 처리
+                console.log(response)
                 $(".loading").hide();
-
-                if(response.message != ''){
+                if (response.message != '') {
                     $('#msg').css('display', 'none');
-                    $('#previewImg').css('display','none');
+                    $('#previewImg').css('display', 'none');
                     $('.uploadBtnDiv').css('display', 'none');
                     $('.resultBtnDiv').css('display', 'block');
                     $('#resultImg').attr('src', response.img_str);
-                }else if(response.error != ''){
-                    $('#msg').html('<span>'+ response.error +'</span>');
+                } else if (response.error != '') {
+                    $('#msg').html('<span>' + response.error + '</span>');
                     $('#msg').css('display', 'block');
                 }
+            });
 
-            },
-            error: function (response) {
-                console.log(response.error); // display error response
-                $(".loading").hide();
-                $('#msg').html('<span>Sorry, an error occurred. Please try again.</span>');
-                $('#msg').css('display', 'block');
-            }
-        }); 
+        }else{
+            $('#msg').html('<span>🐶사진을 선택하세요🐶</span>');
+            $('#msg').css('display', 'block');
+        }
+
+        // 로딩 창 표시
+
+        // $.ajax({
+        //     url: 'img2img', // point to server-side URL
+        //     dataType: 'json', // what to expect back from server
+        //     cache: false,
+        //     contentType: false,
+        //     processData: false,
+        //     data: form_data,
+        //     type: 'post',
+        //     success: function (response) { // display success response
+        //         // 로딩 창 숨김
+        //         $(".loading").hide();
+
+        //         if(response.message != ''){
+        //             $('#msg').css('display', 'none');
+        //             $('#previewImg').css('display','none');
+        //             $('.uploadBtnDiv').css('display', 'none');
+        //             $('.resultBtnDiv').css('display', 'block');
+        //             $('#resultImg').attr('src', response.img_str);
+        //         }else if(response.error != ''){
+        //             $('#msg').html('<span>'+ response.error +'</span>');
+        //             $('#msg').css('display', 'block');
+        //         }
+
+        //     },
+        //     error: function (response) {
+        //         console.log(response.error); // display error response
+        //         $(".loading").hide();
+        //         $('#msg').html('<span>Sorry, an error occurred. Please try again.</span>');
+        //         $('#msg').css('display', 'block');
+        //     }
+        // }); 
     });
+
+    
 
     $('.deleteImgBtn').on('click', function () {
         // 이미지 초기화
@@ -90,6 +111,21 @@ $(document).ready(function (e) {
             alert('이미지가 로드되지 않았습니다.');
         }
     });
+
+    // socket.on('result', function (response) {
+    //     $(".loading").hide();
+    //     console.log(response);
+    //     if (response.message != '') {
+    //         $('#msg').css('display', 'none');
+    //         $('#previewImg').css('display', 'none');
+    //         $('.uploadBtnDiv').css('display', 'none');
+    //         $('.resultBtnDiv').css('display', 'block');
+    //         $('#resultImg').attr('src', response.img_str);
+    //     } else if (response.error != '') {
+    //         $('#msg').html('<span>' + response.error + '</span>');
+    //         $('#msg').css('display', 'block');
+    //     }
+    // });
 
     var isCheckingOrigin = false;
 

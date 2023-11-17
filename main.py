@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify
+from flask_socketio import SocketIO, emit
 from app import app
-import time
 import torch
 from PIL import Image
 from io import BytesIO
@@ -84,43 +84,45 @@ pipe.set_adapters(["more_detail", "blindbox"], adapter_weights=[1, 0]) # lora we
 pipe.enable_model_cpu_offload()
 pipe.enable_xformers_memory_efficient_attention()
 
+result_queue = {}
+socketio = SocketIO(app)
+
 @app.route('/')
 def upload_form():
     return render_template('main.html')
 
-@app.route('/img2img', methods=['POST'])
-def upload_file():
-    try:
-        # check if the post request has the file part
-        if 'selectImage' not in request.files:
-            resp = jsonify({'message' : 'No file part in the request', 'error':''})
-            resp.status_code = 400
-            return resp
+@socketio.on('upload')
+def upload_file(data):
+    # check if the post request has the file part
+    if 'selectImage' not in data:
+        return {'message': '', 'error': 'No file part in the request'}
 
-        # device = "cuda" if torch.cuda.is_available() else "cpu"
-        # pipe.to(device)
-        
-        inputImg = request.files.getlist('selectImage')[0]
-        
-        prompt = "christmas decoration, animal, cute, high quality, 8k, 3d animation, masterpiece"
-        negative_prompt = "EasyNegative, human, humanization, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name"
+    # device = "cuda" if torch.cuda.is_available() else "cpu"
+    # pipe.to(device)
+    
+    prompt = "christmas decoration, animal, cute, high quality, 8k, 3d animation, masterpiece"
+    negative_prompt = "EasyNegative, human, humanization, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name"
 
-        init_image = load_image(Image.open(inputImg).convert("RGB"))
+    inputImg = data.get('selectImage')
+    image_data = BytesIO(inputImg)
+    init_image = load_image(Image.open(image_data).convert("RGB"))
+    image = np.array(init_image)
 
-        #depth용
-        #image = depth_estimator(init_image)['depth']
-        #image = np.array(image)
-        image = np.array(init_image)
-
-        low_threshold = 100
-        high_threshold = 200
+    low_threshold = 100
+    high_threshold = 200
         
-        image = cv2.Canny(image, low_threshold, high_threshold)
-        image = image[:, :, None]
-        image = np.concatenate([image, image, image], axis=2)
-        canny_image = Image.fromarray(image)
-        #canny_image.show()
+    image = cv2.Canny(image, low_threshold, high_threshold)
+    image = image[:, :, None]
+    image = np.concatenate([image, image, image], axis=2)
+    canny_image = Image.fromarray(image)
+    #canny_image.show()
         
+    result = process_request(init_image, prompt, negative_prompt, canny_image)
+    
+    return result
+    
+def process_request(init_image, prompt, negative_prompt, canny_image):   
+    try:             
         output = pipe(prompt, 
                 negative_prompt=negative_prompt,
                 image = init_image,
@@ -134,30 +136,29 @@ def upload_file():
         output.save(buffered, format='png')
         
         img_str = "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode("utf-8")
-        errors = {}
-        success = False
         
+        success = False
+    
         # 이미지가 검정색인지 검사
         decoded_img = Image.open(io.BytesIO(base64.b64decode(img_str.split(',')[1])))
         is_black_image = all(pixel == (0, 0, 0) for pixel in decoded_img.getdata())
         print(is_black_image)
 
-        
+    
         if is_black_image:
             success = False
-            return jsonify({'message': '','error': 'Sorry, an error occurred. Please try again.'})
+            return {'message': '', 'error': 'Sorry, an error occurred. Please try again.'}
         else:
             success = True
 
         if success:
-            return jsonify({'message': 'Files successfully changed', 'img_str': img_str, 'error': ''}), 201
+            return {'message': 'Files successfully changed', 'img_str': img_str, 'error': ''}
         else:
-            return jsonify({'message': '', 'img_str': img_str, 'error': 'errors'}), 400
-
+            return {'message': '', 'img_str': '', 'error': 'errors'}
     
     except Exception as e:
         print(str(e))
-        return jsonify({'message': '','error': 'Sorry, an error occurred. Please try again.'}), 500
+        return {'message': '', 'error': 'Sorry, an error occurred. Please try again.'}
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    socketio.run(app, debug=False, host='0.0.0.0', port=5000)
