@@ -11,6 +11,7 @@ import base64
 import cv2
 import numpy as np
 import transformers
+from concurrent.futures import ThreadPoolExecutor
 
 token = app.config['TOKEN']
 
@@ -86,6 +87,7 @@ pipe.enable_xformers_memory_efficient_attention()
 
 result_queue = {}
 socketio = SocketIO(app)
+executor = ThreadPoolExecutor(2)
 
 @app.route('/')
 def upload_form():
@@ -95,7 +97,8 @@ def upload_form():
 def upload_file(data):
     # check if the post request has the file part
     if 'selectImage' not in data:
-        return {'message': '', 'error': 'No file part in the request'}
+        emit('result', {'message': '', 'error': 'No file part in the request'}, json=True)
+        return
 
     # device = "cuda" if torch.cuda.is_available() else "cpu"
     # pipe.to(device)
@@ -119,7 +122,7 @@ def upload_file(data):
         
     result = process_request(init_image, prompt, negative_prompt, canny_image)
     
-    return result
+    emit('result', result, json=True) 
     
 def process_request(init_image, prompt, negative_prompt, canny_image):   
     try:             

@@ -15,60 +15,12 @@ $(document).ready(function (e) {
             // var formData = new FormData();
             // formData.append('selectImage', selectImage[0]);
             
-            socket.emit('upload', {'selectImage': selectImage[0]}, function(response) {
-                // 서버에서 전달하는 콜백을 이용하여 처리
-                console.log(response)
-                $(".loading").hide();
-                if (response.message != '') {
-                    $('#msg').css('display', 'none');
-                    $('#previewImg').css('display', 'none');
-                    $('.uploadBtnDiv').css('display', 'none');
-                    $('.resultBtnDiv').css('display', 'block');
-                    $('#resultImg').attr('src', response.img_str);
-                } else if (response.error != '') {
-                    $('#msg').html('<span>' + response.error + '</span>');
-                    $('#msg').css('display', 'block');
-                }
-            });
+            socket.emit('upload', {'selectImage': selectImage[0]});
 
         }else{
             $('#msg').html('<span>🐶사진을 선택하세요🐶</span>');
             $('#msg').css('display', 'block');
         }
-
-        // 로딩 창 표시
-
-        // $.ajax({
-        //     url: 'img2img', // point to server-side URL
-        //     dataType: 'json', // what to expect back from server
-        //     cache: false,
-        //     contentType: false,
-        //     processData: false,
-        //     data: form_data,
-        //     type: 'post',
-        //     success: function (response) { // display success response
-        //         // 로딩 창 숨김
-        //         $(".loading").hide();
-
-        //         if(response.message != ''){
-        //             $('#msg').css('display', 'none');
-        //             $('#previewImg').css('display','none');
-        //             $('.uploadBtnDiv').css('display', 'none');
-        //             $('.resultBtnDiv').css('display', 'block');
-        //             $('#resultImg').attr('src', response.img_str);
-        //         }else if(response.error != ''){
-        //             $('#msg').html('<span>'+ response.error +'</span>');
-        //             $('#msg').css('display', 'block');
-        //         }
-
-        //     },
-        //     error: function (response) {
-        //         console.log(response.error); // display error response
-        //         $(".loading").hide();
-        //         $('#msg').html('<span>Sorry, an error occurred. Please try again.</span>');
-        //         $('#msg').css('display', 'block');
-        //     }
-        // }); 
     });
 
     
@@ -112,20 +64,19 @@ $(document).ready(function (e) {
         }
     });
 
-    // socket.on('result', function (response) {
-    //     $(".loading").hide();
-    //     console.log(response);
-    //     if (response.message != '') {
-    //         $('#msg').css('display', 'none');
-    //         $('#previewImg').css('display', 'none');
-    //         $('.uploadBtnDiv').css('display', 'none');
-    //         $('.resultBtnDiv').css('display', 'block');
-    //         $('#resultImg').attr('src', response.img_str);
-    //     } else if (response.error != '') {
-    //         $('#msg').html('<span>' + response.error + '</span>');
-    //         $('#msg').css('display', 'block');
-    //     }
-    // });
+    socket.on('result', function (response) {
+        $(".loading").hide();
+        if (response.message != '') {
+            $('#msg').css('display', 'none');
+            $('#previewImg').css('display', 'none');
+            $('.uploadBtnDiv').css('display', 'none');
+            $('.resultBtnDiv').css('display', 'block');
+            $('#resultImg').attr('src', response.img_str);
+        } else if (response.error != '') {
+            $('#msg').html('<span>' + response.error + '</span>');
+            $('#msg').css('display', 'block');
+        }
+    });
 
     var isCheckingOrigin = false;
 
